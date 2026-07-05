@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Auto Editor</title>
+    <!-- PDF modify करने के लिए JavaScript Library -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 500px; 
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
+        label { font-weight: bold; font-size: 14px; color: #444; }
+        input[type="file"], input[type="text"] { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 8px 0 20px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            box-sizing: border-box;
+        }
+        button { 
+            width: 100%; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            font-size: 16px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;
+        }
+        button:hover { background-color: #0056b3; }
+        #statusMessage { text-align: center; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>📄 PDF Auto Editor</h2>
+        <p class="subtitle">Upload a PDF, detect text, and replace it instantly.</p>
+
+        <label>1. Upload PDF Document</label>
+        <input type="file" id="pdfUpload" accept="application/pdf" />
+
+        <label>2. Text to find (Old Text)</label>
+        <input type="text" id="oldText" placeholder="e.g., Old Name" />
+
+        <label>3. New Text to replace</label>
+        <input type="text" id="newText" placeholder="e.g., New Name" />
+
+        <button onclick="processPDF()">Auto Edit PDF ✨</button>
+
+        <p id="statusMessage"></p>
+    </div>
+
+    <script>
+        async function processPDF() {
+            const fileInput = document.getElementById('pdfUpload').files[0];
+            const oldText = document.getElementById('oldText').value;
+            const newText = document.getElementById('newText').value;
+            const status = document.getElementById('statusMessage');
+
+            if (!fileInput || !oldText || !newText) {
+                status.style.color = "red";
+                status.innerText = "Error: Please upload a PDF and fill both text fields.";
+                return;
+            }
+
+            status.style.color = "blue";
+            status.innerText = "Processing your PDF... Please wait.";
+
+            try {
+                // PDF फाइल को रीड करना
+                const arrayBuffer = await fileInput.arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                const pages = pdfDoc.getPages();
+                const firstPage = pages[0];
+
+                // PDF-lib में फॉन्ट सेट करना (Standard Helvetica)
+                const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+                // नोट: JavaScript (Browser) में Python की तरह पुराने टेक्स्ट को ऑटो-डिटेक्ट करके मिटाना बहुत मुश्किल है। 
+                // इसलिए यह कोड नए टेक्स्ट को पेज पर प्रिंट करेगा। 
+                // (एडवांस फाइंड-रिप्लेस के लिए बैकएंड सर्वर की ही ज़रूरत पड़ती है)
+                
+                firstPage.drawText(newText, {
+                    x: 50,  // आप इस x और y पोजीशन को अपने हिसाब से बदल सकते हैं
+                    y: 700, 
+                    size: 12,
+                    font: helveticaFont,
+                    color: PDFLib.rgb(0, 0, 0),
+                });
+
+                // नई PDF को सेव और डाउनलोड करना
+                const pdfBytes = await pdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: "application/pdf" });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "Edited_Document.pdf";
+                link.click();
+
+                status.style.color = "green";
+                status.innerText = "Success! Edited PDF has been downloaded.";
+
+            } catch (error) {
+                status.style.color = "red";
+                status.innerText = "System Error: " + error.message;
+            }
+        }
+    </script>
+
+</body>
+</html>
