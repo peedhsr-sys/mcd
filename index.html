@@ -3,125 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birth Certificate Editor</title>
-    <!-- PDF-LIB library for editing PDF -->
+    <title>Advanced Certificate Editor</title>
+    <!-- PDF-LIB library (No backend required) -->
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-    <!-- Fontkit for custom fonts support -->
-    <script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
     
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
-        .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; margin: auto; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; font-size: 16px; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #218838; }
-        #status { text-align: center; margin-top: 15px; color: red; font-weight: bold; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #121212; 
+            color: #ffffff; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .container { 
+            max-width: 750px; 
+            margin: 0 auto; 
+            background: #1e1e2f; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.8); 
+        }
+        h2 { text-align: center; color: #4CAF50; margin-top: 0; }
+        .info-text { text-align: center; color: #aaa; font-size: 14px; margin-bottom: 20px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full-width { grid-column: span 2; }
+        
+        label { font-size: 13px; color: #00e676; font-weight: bold; margin-bottom: 5px; display: block; }
+        input[type="text"], input[type="number"] { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #444; 
+            border-radius: 6px; 
+            background: #2a2a40; 
+            color: #fff; 
+            font-size: 14px; 
+            box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: #4CAF50; }
+        
+        .settings-box { 
+            background: #252538; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            border-left: 4px solid #ff9800; 
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            margin-top: 25px; 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+        button:hover { background: #45a049; }
+        
+        #status { text-align: center; margin-top: 15px; font-weight: bold; font-size: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Certificate Editor Tool</h2>
-    
-    <div class="form-group">
-        <label>नाम / Name:</label>
-        <input type="text" id="name" value="AMAAN ANSARI">
-    </div>
-    
-    <div class="form-group">
-        <label>लिंग / Gender:</label>
-        <input type="text" id="gender" value="MALE">
+    <h2>🔥 Auto PDF Editor PRO 🔥</h2>
+    <p class="info-text">Note: GitHub repo me isi file ke sath "template.pdf" zaroor honi chahiye.</p>
+
+    <!-- FORM START -->
+    <div class="grid">
+        <div>
+            <label>नाम / Name:</label>
+            <input type="text" id="name" value="AMAAN ANSARI">
+        </div>
+        <div>
+            <label>लिंग / Gender:</label>
+            <input type="text" id="gender" value="MALE">
+        </div>
+        <div>
+            <label>जन्म की तिथि / Date of Birth:</label>
+            <input type="text" id="dob" value="24/06/2021">
+        </div>
+        <div>
+            <label>पंजीकरण की तिथि / Reg Date:</label>
+            <input type="text" id="regDate" value="14/07/2021">
+        </div>
+        <div class="full-width">
+            <label>जन्म का स्थान / Place of Birth:</label>
+            <input type="text" id="pob" value="SWAMY DAYANAND HOSPITAL, DILSHAD GARDEN, DELHI 110095">
+        </div>
+        <div>
+            <label>पंजीकरण संख्या / Reg No:</label>
+            <input type="text" id="regNo" value="MCDOLIR-0121-279439-E">
+        </div>
+        <div>
+            <label>जारी करने की तिथि / Issue Date:</label>
+            <input type="text" id="issueDate" value="15/09/2023">
+        </div>
+        <div>
+            <label>माता का नाम / Mother Name:</label>
+            <input type="text" id="mother" value="KANCHAN">
+        </div>
+        <div>
+            <label>पिता का नाम / Father Name:</label>
+            <input type="text" id="father" value="WAHID">
+        </div>
+        <div class="full-width">
+            <label>वर्तमान पता / Present Address:</label>
+            <input type="text" id="address" value="A-288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095">
+        </div>
+        <div class="full-width">
+            <label>स्थाई पता / Permanent Address:</label>
+            <input type="text" id="permAddress" value="A-288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095">
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>जन्म की तिथि / Date of Birth:</label>
-        <input type="text" id="dob" value="24/06/2021">
+    <!-- ADVANCED ALIGNMENT TOOL (NO CODE EDIT REQUIRED) -->
+    <div class="settings-box">
+        <h4 style="margin: 0 0 10px 0; color: #ff9800;">⚙️ Alignment Adjuster (Jadui Settings)</h4>
+        <p style="font-size: 12px; color: #ccc; margin: 0 0 15px 0;">Agar text line se upar-neeche ya left-right bhag raha ho, to yaha se number badhayein ya ghatayein (Jaise -10, 20, -50). Pura text ek sath adjust ho jayega!</p>
+        <div class="grid">
+            <div>
+                <label>↔️ Left/Right Set Karein (X Offset):</label>
+                <input type="number" id="offsetX" value="0">
+            </div>
+            <div>
+                <label>↕️ Upar/Neeche Set Karein (Y Offset):</label>
+                <input type="number" id="offsetY" value="0">
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>जन्म का स्थान / Place of Birth:</label>
-        <input type="text" id="pob" value="SWAMY DAYANAND HOSPITAL, DELHI 110095">
-    </div>
-    
-    <div class="form-group">
-        <label>माता का नाम / Name of Mother:</label>
-        <input type="text" id="mother" value="KANCHAN">
-    </div>
-
-    <div class="form-group">
-        <label>पिता का नाम / Name of Father:</label>
-        <input type="text" id="father" value="WAHID">
-    </div>
-
-    <button onclick="generatePDF()">Generate & Download PDF</button>
+    <button onclick="generatePDF()">🚀 Generate & Download PDF</button>
     <div id="status"></div>
 </div>
 
 <script>
     async function generatePDF() {
         const statusDiv = document.getElementById('status');
+        statusDiv.style.color = "yellow";
         statusDiv.innerText = "PDF Ban raha hai, kripya wait karein...";
 
         try {
-            // 1. Aapki GitHub file fetch kar raha hai (Make sure template.pdf is in the same repo/folder)
+            // 1. Template Load Karo
             const url = 'template.pdf'; 
             const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
-
-            // 2. PDF load karna
             const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-
-            // Font set karna (Default Helvetica. Custom font bhi add kar sakte ho agar hindi type karna ho)
-            const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-
-            // PDF ka pehla page lena
-            const pages = pdfDoc.getPages();
-            const firstPage = pages[0];
-
-            // 3. User inputs HTML form se uthana
-            const name = document.getElementById('name').value;
-            const gender = document.getElementById('gender').value;
-            const dob = document.getElementById('dob').value;
-            const pob = document.getElementById('pob').value;
-            const mother = document.getElementById('mother').value;
-            const father = document.getElementById('father').value;
-
-            // 4. TEXT DRAW KARNA (Yaha aapko X aur Y coordinates apne PDF ke hisaab se adjust karne padenge)
-            // X (Left to Right) badhta hai.
-            // Y (Bottom to Top) badhta hai. (PDF me 0,0 page ke bottom-left me hota hai)
             
-            const fontSize = 11;
-            const color = PDFLib.rgb(0, 0, 0); // Black color
+            // 2. Official Font Load Karo
+            const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+            const page = pdfDoc.getPages()[0];
 
-            // Coordinates (x, y) set karo jahan text likhna hai
-            firstPage.drawText(name,   { x: 220, y: 650, size: fontSize, font: helveticaFont, color: color });
-            firstPage.drawText(gender, { x: 220, y: 625, size: fontSize, font: helveticaFont, color: color });
-            firstPage.drawText(dob,    { x: 220, y: 600, size: fontSize, font: helveticaFont, color: color });
-            firstPage.drawText(pob,    { x: 220, y: 560, size: fontSize, font: helveticaFont, color: color });
-            firstPage.drawText(mother, { x: 220, y: 500, size: fontSize, font: helveticaFont, color: color });
-            firstPage.drawText(father, { x: 220, y: 475, size: fontSize, font: helveticaFont, color: color });
+            // 3. UI se Offset Settings lo
+            const xOffset = parseInt(document.getElementById('offsetX').value) || 0;
+            const yOffset = parseInt(document.getElementById('offsetY').value) || 0;
 
-            // 5. Naya PDF Save karna
+            const fontSize = 10;
+            const textColor = PDFLib.rgb(0, 0, 0); // Black Text
+            const whiteColor = PDFLib.rgb(1, 1, 1); // White box color (Chupane ke liye)
+
+            // Base X coordinate (Left se kitni doori par text shuru hoga)
+            const baseX = 230 + xOffset; 
+
+            // Function: Purane text par Safed patti lagao aur naya text likho
+            function writeText(text, yPos, boxWidth, boxHeight) {
+                const finalY = yPos + yOffset;
+                // Safed patti (Whiteout) draw karna
+                page.drawRectangle({ x: baseX - 2, y: finalY - 2, width: boxWidth, height: boxHeight, color: whiteColor });
+                // Naya text draw karna
+                page.drawText(text, { x: baseX, y: finalY, size: fontSize, font: font, color: textColor });
+            }
+
+            // 4. Sabhi fields ko unki jagah par set karna (Y coordinates set kiye hain)
+            writeText(document.getElementById('name').value, 460, 250, 15);
+            writeText(document.getElementById('gender').value, 440, 100, 15);
+            writeText(document.getElementById('dob').value, 420, 200, 15);
+            
+            // Address / Place thode bade hote hain, unka box bada kiya hai
+            writeText(document.getElementById('pob').value, 395, 330, 20); 
+            
+            writeText(document.getElementById('regDate').value, 360, 200, 15);
+            writeText(document.getElementById('regNo').value, 340, 250, 15);
+            writeText(document.getElementById('mother').value, 320, 250, 15);
+            writeText(document.getElementById('father').value, 300, 250, 15);
+            
+            writeText(document.getElementById('address').value, 275, 330, 20);
+            writeText(document.getElementById('permAddress').value, 255, 330, 20);
+            
+            writeText(document.getElementById('issueDate').value, 230, 200, 15);
+
+            // 5. Final PDF Download Karwana
             const pdfBytes = await pdfDoc.save();
-
-            // 6. Download karwana
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'Edited_Certificate.pdf';
+            
+            // File ka naam apne aap user ke naam par save hoga
+            let fileName = document.getElementById('name').value.trim().replace(/\s+/g, '_');
+            link.download = fileName + '_Certificate.pdf';
+            
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            statusDiv.style.color = "green";
-            statusDiv.innerText = "PDF successfully download ho gaya!";
+            statusDiv.style.color = "#00e676";
+            statusDiv.innerText = "✅ PDF Download Ho Gaya! (Downloads folder check karein)";
 
         } catch (error) {
             console.error(error);
-            statusDiv.style.color = "red";
-            statusDiv.innerText = "Error! Ensure 'template.pdf' is in the exact same folder aur naam me spelling mistake na ho.";
+            statusDiv.style.color = "#ff3d00";
+            statusDiv.innerText = "❌ Error: 'template.pdf' nahi mili. Repo check karein.";
         }
     }
 </script>
