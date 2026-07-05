@@ -1,58 +1,130 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Birth Certificate Editor</title>
-    <script src="https://unpkg.com/pdf-lib@1.17.1"></script>
+    <!-- PDF-LIB library for editing PDF -->
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <!-- Fontkit for custom fonts support -->
+    <script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
+    
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: auto; }
-        input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; margin: auto; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; font-size: 16px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #218838; }
+        #status { text-align: center; margin-top: 15px; color: red; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Edit Birth Certificate</h2>
-    <input type="text" id="name" placeholder="Name (AMAAN ANSARI)">
-    <input type="text" id="father" placeholder="Father's Name (WAHID)">
-    <input type="text" id="mother" placeholder="Mother's Name (KANCHAN)">
-    <input type="text" id="address" placeholder="Address (A-288, OLD SEEMA PURI...)">
-    <button onclick="editPDF()">Download Edited PDF</button>
+    <h2>Certificate Editor Tool</h2>
+    
+    <div class="form-group">
+        <label>नाम / Name:</label>
+        <input type="text" id="name" value="AMAAN ANSARI">
+    </div>
+    
+    <div class="form-group">
+        <label>लिंग / Gender:</label>
+        <input type="text" id="gender" value="MALE">
+    </div>
+
+    <div class="form-group">
+        <label>जन्म की तिथि / Date of Birth:</label>
+        <input type="text" id="dob" value="24/06/2021">
+    </div>
+
+    <div class="form-group">
+        <label>जन्म का स्थान / Place of Birth:</label>
+        <input type="text" id="pob" value="SWAMY DAYANAND HOSPITAL, DELHI 110095">
+    </div>
+    
+    <div class="form-group">
+        <label>माता का नाम / Name of Mother:</label>
+        <input type="text" id="mother" value="KANCHAN">
+    </div>
+
+    <div class="form-group">
+        <label>पिता का नाम / Name of Father:</label>
+        <input type="text" id="father" value="WAHID">
+    </div>
+
+    <button onclick="generatePDF()">Generate & Download PDF</button>
+    <div id="status"></div>
 </div>
 
 <script>
-    async function editPDF() {
-        // आपकी फाइल का नाम 'template.pdf' होना चाहिए
-        const url = './template.pdf'; 
-        const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
+    async function generatePDF() {
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerText = "PDF Ban raha hai, kripya wait karein...";
 
-        const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-        const pages = pdfDoc.getPages();
-        const firstPage = pages[0];
-        const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+        try {
+            // 1. Aapki GitHub file fetch kar raha hai (Make sure template.pdf is in the same repo/folder)
+            const url = 'template.pdf'; 
+            const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
 
-        // डेटा उठाएं
-        const name = document.getElementById('name').value;
-        const father = document.getElementById('father').value;
-        const mother = document.getElementById('mother').value;
-        const address = document.getElementById('address').value;
+            // 2. PDF load karna
+            const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
 
-        // पुराने टेक्स्ट को सफेद बॉक्स से ढंकना (Coordinates PDF के हिसाब से सेट करने होंगे)
-        // ध्यान दें: ये वैल्यूज अंदाज़न हैं, आपको इन्हें अपनी PDF के प्रिंट के हिसाब से सेट करना होगा
-        firstPage.drawRectangle({ x: 150, y: 650, width: 250, height: 15, color: PDFLib.rgb(1, 1, 1) });
-        
-        // नया टेक्स्ट लिखना
-        if(name) firstPage.drawText(name, { x: 155, y: 652, size: 11, font: font });
+            // Font set karna (Default Helvetica. Custom font bhi add kar sakte ho agar hindi type karna ho)
+            const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: "application/pdf" });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = "Edited_Birth_Certificate.pdf";
-        link.click();
+            // PDF ka pehla page lena
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+
+            // 3. User inputs HTML form se uthana
+            const name = document.getElementById('name').value;
+            const gender = document.getElementById('gender').value;
+            const dob = document.getElementById('dob').value;
+            const pob = document.getElementById('pob').value;
+            const mother = document.getElementById('mother').value;
+            const father = document.getElementById('father').value;
+
+            // 4. TEXT DRAW KARNA (Yaha aapko X aur Y coordinates apne PDF ke hisaab se adjust karne padenge)
+            // X (Left to Right) badhta hai.
+            // Y (Bottom to Top) badhta hai. (PDF me 0,0 page ke bottom-left me hota hai)
+            
+            const fontSize = 11;
+            const color = PDFLib.rgb(0, 0, 0); // Black color
+
+            // Coordinates (x, y) set karo jahan text likhna hai
+            firstPage.drawText(name,   { x: 220, y: 650, size: fontSize, font: helveticaFont, color: color });
+            firstPage.drawText(gender, { x: 220, y: 625, size: fontSize, font: helveticaFont, color: color });
+            firstPage.drawText(dob,    { x: 220, y: 600, size: fontSize, font: helveticaFont, color: color });
+            firstPage.drawText(pob,    { x: 220, y: 560, size: fontSize, font: helveticaFont, color: color });
+            firstPage.drawText(mother, { x: 220, y: 500, size: fontSize, font: helveticaFont, color: color });
+            firstPage.drawText(father, { x: 220, y: 475, size: fontSize, font: helveticaFont, color: color });
+
+            // 5. Naya PDF Save karna
+            const pdfBytes = await pdfDoc.save();
+
+            // 6. Download karwana
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Edited_Certificate.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            statusDiv.style.color = "green";
+            statusDiv.innerText = "PDF successfully download ho gaya!";
+
+        } catch (error) {
+            console.error(error);
+            statusDiv.style.color = "red";
+            statusDiv.innerText = "Error! Ensure 'template.pdf' is in the exact same folder aur naam me spelling mistake na ho.";
+        }
     }
 </script>
+
 </body>
 </html>
