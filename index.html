@@ -1,225 +1,187 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Certificate Editor</title>
-    <!-- PDF-LIB library (No backend required) -->
-    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-    
+    <title>Birth Certificate - Municipal Corporation of Delhi</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #121212; 
-            color: #ffffff; 
-            padding: 20px; 
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
             margin: 0;
+            padding: 20px;
+            color: #333;
         }
-        .container { 
-            max-width: 750px; 
-            margin: 0 auto; 
-            background: #1e1e2f; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.8); 
+        .certificate-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border: 2px solid #003366;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
         }
-        h2 { text-align: center; color: #4CAF50; margin-top: 0; }
-        .info-text { text-align: center; color: #aaa; font-size: 14px; margin-bottom: 20px; }
-        
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .full-width { grid-column: span 2; }
-        
-        label { font-size: 13px; color: #00e676; font-weight: bold; margin-bottom: 5px; display: block; }
-        input[type="text"], input[type="number"] { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #444; 
-            border-radius: 6px; 
-            background: #2a2a40; 
-            color: #fff; 
-            font-size: 14px; 
-            box-sizing: border-box;
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
-        input:focus { outline: none; border-color: #4CAF50; }
-        
-        .settings-box { 
-            background: #252538; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-top: 20px; 
-            border-left: 4px solid #ff9800; 
+        .header h1 {
+            font-size: 24px;
+            margin: 5px 0;
+            color: #003366;
         }
-        
-        button { 
-            width: 100%; 
-            padding: 15px; 
-            margin-top: 25px; 
-            background: #4CAF50; 
-            color: white; 
-            border: none; 
-            border-radius: 6px; 
-            font-size: 18px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: 0.3s; 
+        .header h2 {
+            font-size: 18px;
+            margin: 5px 0;
+            font-weight: normal;
         }
-        button:hover { background: #45a049; }
-        
-        #status { text-align: center; margin-top: 15px; font-weight: bold; font-size: 15px; }
+        .header h3 {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #555;
+        }
+        .cert-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 15px 0;
+            color: #003366;
+        }
+        .cert-number {
+            text-align: right;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .legal-text {
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .info-table td {
+            padding: 10px;
+            vertical-align: top;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+        .info-table td.label {
+            width: 45%;
+            font-weight: bold;
+            color: #003366;
+        }
+        .info-table td.value {
+            width: 55%;
+            text-transform: uppercase;
+        }
+        .footer-note {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .slogan {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #003366;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🔥 Auto PDF Editor PRO 🔥</h2>
-    <p class="info-text">Note: GitHub repo me isi file ke sath "template.pdf" zaroor honi chahiye.</p>
-
-    <!-- FORM START -->
-    <div class="grid">
-        <div>
-            <label>नाम / Name:</label>
-            <input type="text" id="name" value="AMAAN ANSARI">
-        </div>
-        <div>
-            <label>लिंग / Gender:</label>
-            <input type="text" id="gender" value="MALE">
-        </div>
-        <div>
-            <label>जन्म की तिथि / Date of Birth:</label>
-            <input type="text" id="dob" value="24/06/2021">
-        </div>
-        <div>
-            <label>पंजीकरण की तिथि / Reg Date:</label>
-            <input type="text" id="regDate" value="14/07/2021">
-        </div>
-        <div class="full-width">
-            <label>जन्म का स्थान / Place of Birth:</label>
-            <input type="text" id="pob" value="SWAMY DAYANAND HOSPITAL, DILSHAD GARDEN, DELHI 110095">
-        </div>
-        <div>
-            <label>पंजीकरण संख्या / Reg No:</label>
-            <input type="text" id="regNo" value="MCDOLIR-0121-279439-E">
-        </div>
-        <div>
-            <label>जारी करने की तिथि / Issue Date:</label>
-            <input type="text" id="issueDate" value="15/09/2023">
-        </div>
-        <div>
-            <label>माता का नाम / Mother Name:</label>
-            <input type="text" id="mother" value="KANCHAN">
-        </div>
-        <div>
-            <label>पिता का नाम / Father Name:</label>
-            <input type="text" id="father" value="WAHID">
-        </div>
-        <div class="full-width">
-            <label>वर्तमान पता / Present Address:</label>
-            <input type="text" id="address" value="A-288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095">
-        </div>
-        <div class="full-width">
-            <label>स्थाई पता / Permanent Address:</label>
-            <input type="text" id="permAddress" value="A-288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095">
-        </div>
+<div class="certificate-container">
+    
+    <!-- Header Section -->
+    <div class="header">
+        <h1>दिल्ली नगर निगम</h1>
+        <h1>MUNICIPAL CORPORATION OF DELHI</h1>
+        <h2>राष्ट्रीय राजधानी क्षेत्र, दिल्ली सरकार (Govt. of National Capital Territory of Delhi)</h2>
+        <h3>फॉर्म संख्या / Form No. 5</h3>
+        <div class="cert-title">जन्म प्रमाण पत्र / BIRTH CERTIFICATE</div>
     </div>
 
-    <!-- ADVANCED ALIGNMENT TOOL (NO CODE EDIT REQUIRED) -->
-    <div class="settings-box">
-        <h4 style="margin: 0 0 10px 0; color: #ff9800;">⚙️ Alignment Adjuster (Jadui Settings)</h4>
-        <p style="font-size: 12px; color: #ccc; margin: 0 0 15px 0;">Agar text line se upar-neeche ya left-right bhag raha ho, to yaha se number badhayein ya ghatayein (Jaise -10, 20, -50). Pura text ek sath adjust ho jayega!</p>
-        <div class="grid">
-            <div>
-                <label>↔️ Left/Right Set Karein (X Offset):</label>
-                <input type="number" id="offsetX" value="0">
-            </div>
-            <div>
-                <label>↕️ Upar/Neeche Set Karein (Y Offset):</label>
-                <input type="number" id="offsetY" value="0">
-            </div>
-        </div>
+    <!-- Certificate Number -->
+    <div class="cert-number">
+        प्रमाण पत्र संख्या / Certificate No: 0123-1509130425
     </div>
 
-    <button onclick="generatePDF()">🚀 Generate & Download PDF</button>
-    <div id="status"></div>
+    <!-- Legal Act Text -->
+    <div class="legal-text">
+        (Issued under section 17 of the Registration of Birth and Death Act, 1969 and 8/13 of Delhi Registration of Birth Rule, 1999)<br>
+        This is to certify that the following information has been taken from the original record of BIRTH which is the register for Municipal Corporation Of Delhi of SHAHDARA NORTH ZONE of N.C.T. Delhi.
+    </div>
+
+    <!-- Information Table -->
+    <table class="info-table">
+        <tr>
+            <td class="label">नाम / Name</td>
+            <td class="value" style="font-weight: bold; color: #000;">AMAN ANSARI</td>
+        </tr>
+        <tr>
+            <td class="label">लिंग / Gender</td>
+            <td class="value">MALE</td>
+        </tr>
+        <tr>
+            <td class="label">जन्म की तिथि / Date of Birth</td>
+            <td class="value">24/06/2021</td>
+        </tr>
+        <tr>
+            <td class="label">जन्म का स्थान / Place of Birth</td>
+            <td class="value">SWAMY DAYANAND HOSPITAL SWAMY DAYAND HOSPPITAL, C-BLOCK, DILSHAD GARDEN, DELHI 110095 DELHI DILSHAD GARDEN SHAHDARA DELHI INDIA 110095</td>
+        </tr>
+        <tr>
+            <td class="label">पंजीकरण की तिथि / Date of Registration</td>
+            <td class="value">14/07/2021</td>
+        </tr>
+        <tr>
+            <td class="label">पंजीकरण संख्या / Registration No</td>
+            <td class="value">MCDOLIR-0121-279439-E</td>
+        </tr>
+        <tr>
+            <td class="label">माता का naam / Name of Mother</td>
+            <td class="value">KANCHAN</td>
+        </tr>
+        <tr>
+            <td class="label">पिता का नाम / Name of Father</td>
+            <td class="value">WAHID</td>
+        </tr>
+        <tr>
+            <td class="label">वर्तमान/जन्म के समय पता<br><span style="font-weight: normal; font-size: 12px;">Present/Address at the time of Birth</span></td>
+            <td class="value">A -288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095</td>
+        </tr>
+        <tr>
+            <td class="label">स्थाई पता / Permanent Address</td>
+            <td class="value">A -288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095</td>
+        </tr>
+        <tr>
+            <td class="label">जारी करने की तिथि / Date of Issue</td>
+            <td class="value">15/09/2023</td>
+        </tr>
+    </table>
+
+    <!-- Footer Disclaimer Section -->
+    <div class="footer-note">
+        <strong>Disclaimer:</strong> This is system generated certificate/license. In case of any discrepancy, please contact the department.<br>
+        <strong>Note:</strong> This certificate is system generated and does not require any seal/signature in original. The authenticity of this certificate can be verified at mcdonline.nic.in
+    </div>
+
+    <!-- Slogan Section -->
+    <div class="slogan">
+        प्रत्येक जन्म एवं मृत्यु का पंजीकरण सुनिश्चित करे / ENSURE REGISTRATION OF EVERY BIRTH & DEATH
+    </div>
+
 </div>
-
-<script>
-    async function generatePDF() {
-        const statusDiv = document.getElementById('status');
-        statusDiv.style.color = "yellow";
-        statusDiv.innerText = "PDF Ban raha hai, kripya wait karein...";
-
-        try {
-            // 1. Template Load Karo
-            const url = 'template.pdf'; 
-            const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
-            const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-            
-            // 2. Official Font Load Karo
-            const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-            const page = pdfDoc.getPages()[0];
-
-            // 3. UI se Offset Settings lo
-            const xOffset = parseInt(document.getElementById('offsetX').value) || 0;
-            const yOffset = parseInt(document.getElementById('offsetY').value) || 0;
-
-            const fontSize = 10;
-            const textColor = PDFLib.rgb(0, 0, 0); // Black Text
-            const whiteColor = PDFLib.rgb(1, 1, 1); // White box color (Chupane ke liye)
-
-            // Base X coordinate (Left se kitni doori par text shuru hoga)
-            const baseX = 230 + xOffset; 
-
-            // Function: Purane text par Safed patti lagao aur naya text likho
-            function writeText(text, yPos, boxWidth, boxHeight) {
-                const finalY = yPos + yOffset;
-                // Safed patti (Whiteout) draw karna
-                page.drawRectangle({ x: baseX - 2, y: finalY - 2, width: boxWidth, height: boxHeight, color: whiteColor });
-                // Naya text draw karna
-                page.drawText(text, { x: baseX, y: finalY, size: fontSize, font: font, color: textColor });
-            }
-
-            // 4. Sabhi fields ko unki jagah par set karna (Y coordinates set kiye hain)
-            writeText(document.getElementById('name').value, 460, 250, 15);
-            writeText(document.getElementById('gender').value, 440, 100, 15);
-            writeText(document.getElementById('dob').value, 420, 200, 15);
-            
-            // Address / Place thode bade hote hain, unka box bada kiya hai
-            writeText(document.getElementById('pob').value, 395, 330, 20); 
-            
-            writeText(document.getElementById('regDate').value, 360, 200, 15);
-            writeText(document.getElementById('regNo').value, 340, 250, 15);
-            writeText(document.getElementById('mother').value, 320, 250, 15);
-            writeText(document.getElementById('father').value, 300, 250, 15);
-            
-            writeText(document.getElementById('address').value, 275, 330, 20);
-            writeText(document.getElementById('permAddress').value, 255, 330, 20);
-            
-            writeText(document.getElementById('issueDate').value, 230, 200, 15);
-
-            // 5. Final PDF Download Karwana
-            const pdfBytes = await pdfDoc.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            
-            // File ka naam apne aap user ke naam par save hoga
-            let fileName = document.getElementById('name').value.trim().replace(/\s+/g, '_');
-            link.download = fileName + '_Certificate.pdf';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            statusDiv.style.color = "#00e676";
-            statusDiv.innerText = "✅ PDF Download Ho Gaya! (Downloads folder check karein)";
-
-        } catch (error) {
-            console.error(error);
-            statusDiv.style.color = "#ff3d00";
-            statusDiv.innerText = "❌ Error: 'template.pdf' nahi mili. Repo check karein.";
-        }
-    }
-</script>
 
 </body>
 </html>
