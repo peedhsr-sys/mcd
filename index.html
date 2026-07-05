@@ -1,187 +1,651 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Birth Certificate - Municipal Corporation of Delhi</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .certificate-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border: 2px solid #003366;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #003366;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 24px;
-            margin: 5px 0;
-            color: #003366;
-        }
-        .header h2 {
-            font-size: 18px;
-            margin: 5px 0;
-            font-weight: normal;
-        }
-        .header h3 {
-            font-size: 16px;
-            margin: 5px 0;
-            color: #555;
-        }
-        .cert-title {
-            font-size: 20px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin: 15px 0;
-            color: #003366;
-        }
-        .cert-number {
-            text-align: right;
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        .legal-text {
-            font-size: 12px;
-            line-height: 1.6;
-            text-align: center;
-            margin-bottom: 25px;
-            font-style: italic;
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-        }
-        .info-table td {
-            padding: 10px;
-            vertical-align: top;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 14px;
-        }
-        .info-table td.label {
-            width: 45%;
-            font-weight: bold;
-            color: #003366;
-        }
-        .info-table td.value {
-            width: 55%;
-            text-transform: uppercase;
-        }
-        .footer-note {
-            margin-top: 30px;
-            border-top: 1px solid #ccc;
-            padding-top: 15px;
-            font-size: 11px;
-            color: #666;
-            line-height: 1.5;
-        }
-        .slogan {
-            text-align: center;
-            font-weight: bold;
-            margin-top: 15px;
-            color: #003366;
-            font-size: 13px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart PDF Editor — Detect &amp; Edit English Text (Same Font)</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fontkit/2.0.2/fontkit.umd.min.js"></script>
+
+<style>
+  :root{
+    --bg:#0f1115;
+    --panel:#171a21;
+    --panel2:#1e222b;
+    --border:#2a2f3a;
+    --text:#e7e9ee;
+    --muted:#8b93a3;
+    --accent:#5b8cff;
+    --accent2:#3ecf8e;
+    --danger:#ff5d6c;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+  }
+  header{
+    padding:16px 24px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  header h1{
+    font-size:18px;
+    margin:0;
+    font-weight:600;
+    letter-spacing:.2px;
+  }
+  header h1 span{color:var(--accent2);}
+  .toolbar{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  button, .file-btn{
+    background:var(--panel2);
+    color:var(--text);
+    border:1px solid var(--border);
+    padding:9px 16px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-size:14px;
+    font-weight:500;
+    transition:background .15s, border-color .15s, transform .05s;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  button:hover, .file-btn:hover{background:#252b36; border-color:#3a4150;}
+  button:active{transform:scale(.97);}
+  button.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+  button.primary:hover{background:#4a7bef;}
+  button.success{background:var(--accent2); border-color:var(--accent2); color:#062b1c;}
+  button.success:hover{background:#33bd7d;}
+  button:disabled{opacity:.4; cursor:not-allowed;}
+  input[type=file]{display:none;}
+
+  main{
+    display:flex;
+    height:calc(100vh - 65px);
+  }
+  #sidebar{
+    width:230px;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    overflow-y:auto;
+    padding:12px;
+    flex-shrink:0;
+  }
+  #sidebar .page-thumb{
+    border:2px solid transparent;
+    border-radius:8px;
+    margin-bottom:10px;
+    cursor:pointer;
+    overflow:hidden;
+    position:relative;
+  }
+  #sidebar .page-thumb.active{border-color:var(--accent);}
+  #sidebar .page-thumb canvas{width:100%; display:block;}
+  #sidebar .page-thumb .num{
+    position:absolute; bottom:4px; right:6px;
+    background:rgba(0,0,0,.6); color:#fff; font-size:11px;
+    padding:1px 6px; border-radius:4px;
+  }
+  #viewer-wrap{
+    flex:1;
+    overflow:auto;
+    display:flex;
+    justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(circle at 20% 10%, #171b24 0%, var(--bg) 60%);
+  }
+  #stage{
+    position:relative;
+    box-shadow:0 10px 40px rgba(0,0,0,.5);
+    background:#fff;
+  }
+  #pdf-canvas{display:block;}
+  #text-layer{
+    position:absolute;
+    top:0; left:0;
+    line-height:1;
+  }
+  .text-box{
+    position:absolute;
+    cursor:text;
+    outline:1px dashed rgba(91,140,255,0);
+    white-space:pre;
+    transform-origin:0 0;
+    color:transparent;
+  }
+  .text-box:hover{outline:1px dashed rgba(91,140,255,.55); background:rgba(91,140,255,.06);}
+  .text-box.editing{
+    outline:2px solid var(--accent) !important;
+    background:#fff !important;
+    color:#000 !important;
+    z-index:20;
+    cursor:text;
+    box-shadow:0 2px 10px rgba(0,0,0,.25);
+  }
+  .text-box.edited{
+    outline:1px solid rgba(62,207,142,.7);
+  }
+  #empty-state{
+    margin:auto;
+    text-align:center;
+    color:var(--muted);
+    max-width:420px;
+  }
+  #empty-state .icon{font-size:52px; margin-bottom:10px;}
+  #empty-state h2{color:var(--text); font-size:20px; margin-bottom:6px;}
+  #drop-zone{
+    border:2px dashed var(--border);
+    border-radius:16px;
+    padding:40px 30px;
+    transition:border-color .2s, background .2s;
+  }
+  #drop-zone.drag{border-color:var(--accent); background:rgba(91,140,255,.06);}
+
+  #status-bar{
+    position:fixed;
+    bottom:16px; left:50%;
+    transform:translateX(-50%);
+    background:var(--panel2);
+    border:1px solid var(--border);
+    padding:8px 18px;
+    border-radius:20px;
+    font-size:13px;
+    color:var(--muted);
+    display:none;
+    align-items:center;
+    gap:8px;
+    z-index:100;
+    box-shadow:0 6px 20px rgba(0,0,0,.4);
+  }
+  #status-bar.show{display:flex;}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--accent2); animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  #hint-panel{
+    position:fixed;
+    right:20px; bottom:20px;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 16px;
+    max-width:280px;
+    font-size:12.5px;
+    color:var(--muted);
+    display:none;
+    z-index:60;
+  }
+  #hint-panel.show{display:block;}
+  #hint-panel b{color:var(--text);}
+  #hint-panel .close-hint{
+    position:absolute; top:6px; right:8px; cursor:pointer; color:var(--muted);
+  }
+  .zoom-controls{display:flex; align-items:center; gap:4px;}
+  .zoom-controls span{font-size:13px; color:var(--muted); min-width:44px; text-align:center;}
+  .badge{
+    font-size:11px;
+    background:rgba(62,207,142,.15);
+    color:var(--accent2);
+    padding:2px 8px;
+    border-radius:10px;
+    border:1px solid rgba(62,207,142,.3);
+  }
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-thumb{background:#2a2f3a; border-radius:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+</style>
 </head>
 <body>
 
-<div class="certificate-container">
-    
-    <!-- Header Section -->
-    <div class="header">
-        <h1>दिल्ली नगर निगम</h1>
-        <h1>MUNICIPAL CORPORATION OF DELHI</h1>
-        <h2>राष्ट्रीय राजधानी क्षेत्र, दिल्ली सरकार (Govt. of National Capital Territory of Delhi)</h2>
-        <h3>फॉर्म संख्या / Form No. 5</h3>
-        <div class="cert-title">जन्म प्रमाण पत्र / BIRTH CERTIFICATE</div>
+<header>
+  <h1>Smart <span>PDF</span> Editor</h1>
+  <div class="toolbar">
+    <label class="file-btn" for="file-input">📄 Open PDF</label>
+    <input type="file" id="file-input" accept="application/pdf" />
+    <div class="zoom-controls">
+      <button id="zoom-out">−</button>
+      <span id="zoom-level">100%</span>
+      <button id="zoom-in">+</button>
     </div>
+    <button id="undo-btn" disabled>↶ Undo</button>
+    <span class="badge" id="edit-count" style="display:none;">0 edits</span>
+    <button class="success" id="save-btn" disabled>⬇ Save Edited PDF</button>
+  </div>
+</header>
 
-    <!-- Certificate Number -->
-    <div class="cert-number">
-        प्रमाण पत्र संख्या / Certificate No: 0123-1509130425
+<main>
+  <div id="sidebar"></div>
+  <div id="viewer-wrap">
+    <div id="empty-state">
+      <div id="drop-zone">
+        <div class="icon">🗎</div>
+        <h2>Drop a PDF here</h2>
+        <p>Or use "Open PDF" above. English text will be auto-detected — click any text on the page to edit it in its original font, size and style.</p>
+      </div>
     </div>
-
-    <!-- Legal Act Text -->
-    <div class="legal-text">
-        (Issued under section 17 of the Registration of Birth and Death Act, 1969 and 8/13 of Delhi Registration of Birth Rule, 1999)<br>
-        This is to certify that the following information has been taken from the original record of BIRTH which is the register for Municipal Corporation Of Delhi of SHAHDARA NORTH ZONE of N.C.T. Delhi.
+    <div id="stage" style="display:none;">
+      <canvas id="pdf-canvas"></canvas>
+      <div id="text-layer"></div>
     </div>
+  </div>
+</main>
 
-    <!-- Information Table -->
-    <table class="info-table">
-        <tr>
-            <td class="label">नाम / Name</td>
-            <td class="value" style="font-weight: bold; color: #000;">AMAN ANSARI</td>
-        </tr>
-        <tr>
-            <td class="label">लिंग / Gender</td>
-            <td class="value">MALE</td>
-        </tr>
-        <tr>
-            <td class="label">जन्म की तिथि / Date of Birth</td>
-            <td class="value">24/06/2021</td>
-        </tr>
-        <tr>
-            <td class="label">जन्म का स्थान / Place of Birth</td>
-            <td class="value">SWAMY DAYANAND HOSPITAL SWAMY DAYAND HOSPPITAL, C-BLOCK, DILSHAD GARDEN, DELHI 110095 DELHI DILSHAD GARDEN SHAHDARA DELHI INDIA 110095</td>
-        </tr>
-        <tr>
-            <td class="label">पंजीकरण की तिथि / Date of Registration</td>
-            <td class="value">14/07/2021</td>
-        </tr>
-        <tr>
-            <td class="label">पंजीकरण संख्या / Registration No</td>
-            <td class="value">MCDOLIR-0121-279439-E</td>
-        </tr>
-        <tr>
-            <td class="label">माता का naam / Name of Mother</td>
-            <td class="value">KANCHAN</td>
-        </tr>
-        <tr>
-            <td class="label">पिता का नाम / Name of Father</td>
-            <td class="value">WAHID</td>
-        </tr>
-        <tr>
-            <td class="label">वर्तमान/जन्म के समय पता<br><span style="font-weight: normal; font-size: 12px;">Present/Address at the time of Birth</span></td>
-            <td class="value">A -288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095</td>
-        </tr>
-        <tr>
-            <td class="label">स्थाई पता / Permanent Address</td>
-            <td class="value">A -288, OLD SEEMA PURI DELHI EAST DELHI INDIA 110095</td>
-        </tr>
-        <tr>
-            <td class="label">जारी करने की तिथि / Date of Issue</td>
-            <td class="value">15/09/2023</td>
-        </tr>
-    </table>
+<div id="status-bar"><span class="dot"></span><span id="status-text">Working…</span></div>
 
-    <!-- Footer Disclaimer Section -->
-    <div class="footer-note">
-        <strong>Disclaimer:</strong> This is system generated certificate/license. In case of any discrepancy, please contact the department.<br>
-        <strong>Note:</strong> This certificate is system generated and does not require any seal/signature in original. The authenticity of this certificate can be verified at mcdonline.nic.in
-    </div>
-
-    <!-- Slogan Section -->
-    <div class="slogan">
-        प्रत्येक जन्म एवं मृत्यु का पंजीकरण सुनिश्चित करे / ENSURE REGISTRATION OF EVERY BIRTH & DEATH
-    </div>
-
+<div id="hint-panel">
+  <span class="close-hint" onclick="document.getElementById('hint-panel').classList.remove('show')">✕</span>
+  <b>Tip:</b> Click any highlighted text to edit it inline. The tool detects whether the original font is serif, sans-serif or monospace, and whether it's bold/italic, then keeps that same style when you save. Press <b>Esc</b> to stop editing, <b>Enter</b> to confirm a line.
 </div>
 
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js".replace("pdf.min.js","pdf.worker.min.js");
+
+const { PDFDocument, StandardFonts, rgb } = PDFLib;
+
+// ---------- state ----------
+let pdfBytesOriginal = null;   // ArrayBuffer of the uploaded file
+let pdfjsDoc = null;           // pdf.js document
+let currentPageNum = 1;
+let currentScale = 1.5;
+let pageCache = {};            // pageNum -> {viewport, textItems:[...]}
+let edits = {};                // "page-itemIndex" -> {newText, ...meta}
+let undoStack = [];
+
+const fileInput = document.getElementById('file-input');
+const dropZone = document.getElementById('drop-zone');
+const emptyState = document.getElementById('empty-state');
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('pdf-canvas');
+const ctx = canvas.getContext('2d');
+const textLayer = document.getElementById('text-layer');
+const sidebar = document.getElementById('sidebar');
+const saveBtn = document.getElementById('save-btn');
+const undoBtn = document.getElementById('undo-btn');
+const editCountBadge = document.getElementById('edit-count');
+const statusBar = document.getElementById('status-bar');
+const statusText = document.getElementById('status-text');
+const zoomLevelLabel = document.getElementById('zoom-level');
+
+function showStatus(msg){ statusText.textContent = msg; statusBar.classList.add('show'); }
+function hideStatus(){ statusBar.classList.remove('show'); }
+
+// ---------- file loading ----------
+fileInput.addEventListener('change', e => { if(e.target.files[0]) loadFile(e.target.files[0]); });
+
+['dragover','dragenter'].forEach(evt=>{
+  dropZone.addEventListener(evt, e=>{ e.preventDefault(); dropZone.classList.add('drag'); });
+});
+['dragleave','drop'].forEach(evt=>{
+  dropZone.addEventListener(evt, e=>{ e.preventDefault(); dropZone.classList.remove('drag'); });
+});
+dropZone.addEventListener('drop', e=>{
+  const f = e.dataTransfer.files[0];
+  if(f && f.type === 'application/pdf') loadFile(f);
+});
+
+async function loadFile(file){
+  showStatus('Loading PDF…');
+  const buf = await file.arrayBuffer();
+  pdfBytesOriginal = buf.slice(0); // keep a pristine copy
+  const loadingTask = pdfjsLib.getDocument({ data: buf.slice(0) });
+  pdfjsDoc = await loadingTask.promise;
+
+  edits = {};
+  undoStack = [];
+  updateEditUI();
+
+  emptyState.style.display = 'none';
+  stage.style.display = 'block';
+  document.getElementById('hint-panel').classList.add('show');
+
+  await buildSidebarThumbs();
+  await renderPage(1);
+  hideStatus();
+}
+
+async function buildSidebarThumbs(){
+  sidebar.innerHTML = '';
+  for(let i=1;i<=pdfjsDoc.numPages;i++){
+    const page = await pdfjsDoc.getPage(i);
+    const vp = page.getViewport({ scale: 0.22 });
+    const c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'page-thumb' + (i===1?' active':'');
+    wrap.dataset.page = i;
+    wrap.appendChild(c);
+    const num = document.createElement('div');
+    num.className = 'num';
+    num.textContent = i;
+    wrap.appendChild(num);
+    wrap.addEventListener('click', ()=> renderPage(i));
+    sidebar.appendChild(wrap);
+  }
+}
+
+function setActiveThumb(pageNum){
+  [...sidebar.children].forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.page) === pageNum);
+  });
+}
+
+// ---------- font heuristics ----------
+// Guess a "family class" (serif / sans / mono) + weight + italic from the
+// internal PDF font name (e.g. "TT1", "Helvetica-Bold", "Times-Italic", "ABCDEE+ArialMT")
+function classifyFont(fontNameRaw){
+  const name = (fontNameRaw || '').toLowerCase();
+  let family = 'sans';
+  if(/times|georgia|garamond|serif|cambria|minion|book|palatino/.test(name)) family = 'serif';
+  else if(/courier|mono|consolas|typewriter/.test(name)) family = 'mono';
+  else if(/arial|helvetica|calibri|verdana|segoe|tahoma|sans/.test(name)) family = 'sans';
+
+  const bold = /bold|black|heavy|semibold/.test(name);
+  const italic = /italic|oblique/.test(name);
+  return { family, bold, italic };
+}
+
+function cssFontFamily(family){
+  if(family === 'serif') return '"Times New Roman", Times, Georgia, serif';
+  if(family === 'mono') return '"Courier New", Courier, monospace';
+  return 'Arial, Helvetica, "Segoe UI", sans-serif';
+}
+
+function standardFontFor(family, bold, italic){
+  if(family === 'serif'){
+    if(bold && italic) return StandardFonts.TimesRomanBoldItalic;
+    if(bold) return StandardFonts.TimesRomanBold;
+    if(italic) return StandardFonts.TimesRomanItalic;
+    return StandardFonts.TimesRoman;
+  }
+  if(family === 'mono'){
+    if(bold && italic) return StandardFonts.CourierBoldOblique;
+    if(bold) return StandardFonts.CourierBold;
+    if(italic) return StandardFonts.CourierOblique;
+    return StandardFonts.Courier;
+  }
+  // sans
+  if(bold && italic) return StandardFonts.HelveticaBoldOblique;
+  if(bold) return StandardFonts.HelveticaBold;
+  if(italic) return StandardFonts.HelveticaOblique;
+  return StandardFonts.Helvetica;
+}
+
+// Only treat "English-ish" text as directly editable in this pass
+// (Latin letters, numbers, common punctuation). Non-Latin text is shown
+// but flagged as read-only, since faithful re-typesetting needs the
+// original embedded font glyphs.
+function isEnglishText(str){
+  if(!str || !str.trim()) return false;
+  const nonLatin = /[^\x00-\x7F\u00A0-\u024F\u2018-\u201F]/;
+  return !nonLatin.test(str);
+}
+
+// ---------- render page + build editable text layer ----------
+async function renderPage(pageNum){
+  currentPageNum = pageNum;
+  setActiveThumb(pageNum);
+  showStatus('Rendering page ' + pageNum + '…');
+
+  const page = await pdfjsDoc.getPage(pageNum);
+  const viewport = page.getViewport({ scale: currentScale });
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  stage.style.width = viewport.width + 'px';
+  stage.style.height = viewport.height + 'px';
+  textLayer.style.width = viewport.width + 'px';
+  textLayer.style.height = viewport.height + 'px';
+
+  await page.render({ canvasContext: ctx, viewport }).promise;
+
+  const content = await page.getTextContent();
+  textLayer.innerHTML = '';
+
+  const items = [];
+
+  content.items.forEach((item, idx) => {
+    if(!item.str || !item.str.trim()){ items.push(null); return; }
+
+    // transform: [a, b, c, d, e, f]  (PDF text matrix combined with viewport)
+    const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+    const fontHeight = Math.hypot(tx[2], tx[3]); // approx font size in px on screen
+    const angle = Math.atan2(tx[1], tx[0]);
+    const left = tx[4];
+    const top  = tx[5] - fontHeight; // baseline correction
+
+    const fontInfo = classifyFont(item.fontName);
+    const english = isEnglishText(item.str);
+
+    const key = pageNum + '-' + idx;
+    const edited = edits[key];
+
+    const div = document.createElement('div');
+    div.className = 'text-box' + (edited ? ' edited' : '');
+    div.textContent = edited ? edited.newText : item.str;
+    div.style.left = left + 'px';
+    div.style.top = top + 'px';
+    div.style.fontSize = fontHeight + 'px';
+    div.style.fontFamily = cssFontFamily(fontInfo.family);
+    div.style.fontWeight = fontInfo.bold ? '700' : '400';
+    div.style.fontStyle = fontInfo.italic ? 'italic' : 'normal';
+    div.style.transform = angle ? `rotate(${angle}rad)` : 'none';
+    div.style.width = (item.width * currentScale) + 'px';
+    div.dataset.key = key;
+    div.dataset.editable = english ? '1' : '0';
+    if(!english){ div.title = 'Non-English glyphs — visual edit only, kept as image on export.'; }
+    else { div.title = 'Click to edit this text'; }
+
+    div.addEventListener('click', () => startEditing(div, item, fontInfo, {left, top, fontHeight, angle, scale: currentScale, pageNum, idx, width: item.width}));
+
+    textLayer.appendChild(div);
+    items.push({ item, fontInfo, left, top, fontHeight, angle, width: item.width });
+  });
+
+  pageCache[pageNum] = { viewport, items, content };
+  hideStatus();
+}
+
+// ---------- inline editing ----------
+let activeEditor = null;
+
+function startEditing(div, item, fontInfo, geo){
+  if(activeEditor && activeEditor !== div) finishEditing(activeEditor);
+
+  div.contentEditable = 'true';
+  div.classList.add('editing');
+  div.focus();
+  placeCaretAtEnd(div);
+  activeEditor = div;
+
+  div._geo = geo;
+  div._originalStr = item.str;
+  div._fontInfo = fontInfo;
+
+  div.onkeydown = (e) => {
+    if(e.key === 'Enter'){ e.preventDefault(); finishEditing(div); }
+    if(e.key === 'Escape'){ e.preventDefault(); cancelEditing(div); }
+  };
+  div.onblur = () => finishEditing(div);
+}
+
+function placeCaretAtEnd(el){
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+function finishEditing(div){
+  if(!div) return;
+  div.contentEditable = 'false';
+  div.classList.remove('editing');
+  const newText = div.textContent;
+  const key = div.dataset.key;
+
+  if(newText !== div._originalStr){
+    undoStack.push({ key, prev: edits[key] });
+    edits[key] = {
+      newText,
+      pageNum: div._geo.pageNum,
+      idx: div._geo.idx,
+      left: div._geo.left,
+      top: div._geo.top,
+      fontHeight: div._geo.fontHeight,
+      angle: div._geo.angle,
+      scale: div._geo.scale,
+      width: div._geo.width,
+      fontInfo: div._fontInfo,
+      editable: div.dataset.editable === '1'
+    };
+    div.classList.add('edited');
+    updateEditUI();
+  }
+  activeEditor = null;
+}
+
+function cancelEditing(div){
+  div.textContent = div._originalStr;
+  div.contentEditable = 'false';
+  div.classList.remove('editing');
+  activeEditor = null;
+}
+
+function updateEditUI(){
+  const count = Object.keys(edits).length;
+  editCountBadge.style.display = count ? 'inline-block' : 'none';
+  editCountBadge.textContent = count + (count===1 ? ' edit' : ' edits');
+  saveBtn.disabled = count === 0;
+  undoBtn.disabled = undoStack.length === 0;
+}
+
+undoBtn.addEventListener('click', () => {
+  const last = undoStack.pop();
+  if(!last) return;
+  if(last.prev) edits[last.key] = last.prev;
+  else delete edits[last.key];
+  updateEditUI();
+  renderPage(currentPageNum);
+});
+
+// ---------- zoom ----------
+document.getElementById('zoom-in').addEventListener('click', () => setZoom(currentScale + 0.15));
+document.getElementById('zoom-out').addEventListener('click', () => setZoom(currentScale - 0.15));
+function setZoom(z){
+  currentScale = Math.max(0.5, Math.min(3, z));
+  zoomLevelLabel.textContent = Math.round((currentScale/1.5)*100) + '%';
+  if(pdfjsDoc) renderPage(currentPageNum);
+}
+
+// ---------- export edited PDF ----------
+saveBtn.addEventListener('click', exportEditedPdf);
+
+async function exportEditedPdf(){
+  showStatus('Building edited PDF…');
+  try{
+    const pdfDoc = await PDFDocument.load(pdfBytesOriginal.slice(0));
+    const fontCache = {};
+
+    async function getFont(family, bold, italic){
+      const key = family + bold + italic;
+      if(fontCache[key]) return fontCache[key];
+      const f = await pdfDoc.embedFont(standardFontFor(family, bold, italic));
+      fontCache[key] = f;
+      return f;
+    }
+
+    // group edits by page
+    const byPage = {};
+    Object.values(edits).forEach(e => {
+      byPage[e.pageNum] = byPage[e.pageNum] || [];
+      byPage[e.pageNum].push(e);
+    });
+
+    for(const pageNumStr of Object.keys(byPage)){
+      const pageNum = parseInt(pageNumStr);
+      const pdfPage = pdfDoc.getPage(pageNum - 1);
+      const { height: pageHeight } = pdfPage.getSize();
+      const cache = pageCache[pageNum];
+      const viewport = cache.viewport;
+
+      for(const e of byPage[pageNum]){
+        // convert screen(px, top-left origin) coords back to PDF points (bottom-left origin)
+        const pdfScale = viewport.scale; // pdf.js viewport scale used when rendering
+        const xPt = e.left / pdfScale;
+        const wPt = (e.width) ; // item.width already in PDF units
+        const fontSizePt = e.fontHeight / pdfScale;
+        // top (screen, from baseline-corrected div top) -> baseline y in PDF space
+        const baselineScreenY = e.top + e.fontHeight;
+        const yPt = pageHeight - (baselineScreenY / pdfScale);
+
+        // 1) white-out the original text area
+        pdfPage.drawRectangle({
+          x: xPt - 1,
+          y: yPt - fontSizePt * 0.22,
+          width: Math.max(wPt + 4, fontSizePt * 0.6),
+          height: fontSizePt * 1.15,
+          color: rgb(1,1,1),
+        });
+
+        // 2) draw new text in the matching standard font
+        if(e.editable){
+          const font = await getFont(e.fontInfo.family, e.fontInfo.bold, e.fontInfo.italic);
+          pdfPage.drawText(e.newText || '', {
+            x: xPt,
+            y: yPt,
+            size: fontSizePt,
+            font,
+            color: rgb(0,0,0),
+            rotate: e.angle ? PDFLib.degrees(e.angle * 180 / Math.PI) : undefined,
+          });
+        } else {
+          // non-Latin: best effort using Helvetica fallback (glyph coverage limited)
+          const font = await getFont('sans', false, false);
+          try{
+            pdfPage.drawText(e.newText || '', { x: xPt, y: yPt, size: fontSizePt, font, color: rgb(0,0,0) });
+          }catch(err){ /* unsupported glyphs — original stays whited-out */ }
+        }
+      }
+    }
+
+    const outBytes = await pdfDoc.save();
+    downloadBlob(new Blob([outBytes], {type:'application/pdf'}), 'edited.pdf');
+  }catch(err){
+    console.error(err);
+    alert('Export failed: ' + err.message);
+  }
+  hideStatus();
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+</script>
 </body>
 </html>
