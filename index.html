@@ -1,182 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birth Certificate Verification | Municipal Corporation of Delhi</title>
+    <title>PDF Template Filler</title>
+    <!-- pdf-lib लाइब्रेरी को सीधे इंटरनेट से लोड कर रहे हैं (बिना इंस्टॉल किए) -->
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <style>
-        :root {
-            --mcd-blue: #003366;
-            --mcd-red: #cc0000;
-            --success-green: #198754;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .header {
-            background-color: var(--mcd-blue);
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            border-bottom: 5px solid var(--mcd-red);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .header h1 {
-            margin: 5px 0;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-        .header h2 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 400;
-        }
-        .main-container {
-            max-width: 750px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border: 1px solid #dee2e6;
-        }
-        .status-bar {
-            background-color: #d1e7dd;
-            color: #0f5132;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid #badbcc;
-        }
-        .status-bar h3 {
-            margin: 0;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .check-icon {
-            background: var(--success-green);
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-        }
-        .details-wrapper {
-            padding: 25px 30px;
-        }
-        .section-title {
-            color: var(--mcd-blue);
-            border-bottom: 2px solid var(--mcd-red);
-            padding-bottom: 8px;
-            margin-top: 0;
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .info-table th, .info-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e9ecef;
-            text-align: left;
-            font-size: 15px;
-        }
-        .info-table th {
-            width: 40%;
-            color: #495057;
-            font-weight: 600;
-            background-color: #f8f9fa;
-        }
-        .info-table td {
-            font-weight: 700;
-            color: #212529;
-        }
-        .info-table tr:last-child th, .info-table tr:last-child td {
-            border-bottom: none;
-        }
-        .footer {
-            background-color: #343a40;
-            color: #adb5bd;
-            text-align: center;
-            padding: 15px;
-            font-size: 12px;
-            margin-top: 40px;
-        }
-        @media (max-width: 600px) {
-            .main-container { margin: 15px; }
-            .info-table th, .info-table td { display: block; width: 100%; box-sizing: border-box; }
-            .info-table th { border-bottom: none; padding-bottom: 5px; font-size: 13px; color: #6c757d; }
-            .info-table td { padding-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; }
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; font-size: 14px; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #2563eb; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #1d4ed8; }
+        .note { font-size: 12px; color: #888; text-align: center; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>MUNICIPAL CORPORATION OF DELHI</h1>
-        <h2>Online Certificate Verification Portal</h2>
-    </div>
-
-    <div class="main-container">
-        <div class="status-bar">
-            <h3><span class="check-icon">✓</span> Valid & Verified Certificate</h3>
+    <div class="container">
+        <h2>अपना PDF यहाँ भरें</h2>
+        
+        <div class="form-group">
+            <label>1. खाली PDF टेम्पलेट अपलोड करें (जिसमें डेटा भरना है):</label>
+            <input type="file" id="pdfUpload" accept="application/pdf">
         </div>
 
-        <div class="details-wrapper">
-            <h3 class="section-title">Certificate Details</h3>
-            <table class="info-table">
-                <tr>
-                    <th>Registration No.</th>
-                    <td>MCDOLIR-0121-279439</td>
-                </tr>
-                <tr>
-                    <th>Registration Date</th>
-                    <td>14/07/2021</td>
-                </tr>
-                <tr>
-                    <th>Name Of The Child</th>
-                    <td>AMAAN ANSARI</td>
-                </tr>
-                <tr>
-                    <th>Date of Birth</th>
-                    <td>24/06/2021</td>
-                </tr>
-                <tr>
-                    <th>Gender</th>
-                    <td>MALE</td>
-                </tr>
-                <tr>
-                    <th>Father's Name</th>
-                    <td>WAHID</td>
-                </tr>
-                <tr>
-                    <th>Mother's Name</th>
-                    <td>KANCHAN</td>
-                </tr>
-                <tr>
-                    <th>Place of Birth</th>
-                    <td style="line-height: 1.4;">SWAMY DAYANAND HOSPITAL, DILSHAD GARDEN, DELHI</td>
-                </tr>
-            </table>
-        </div>
+        <div style="border-top: 1px solid #eee; margin: 20px 0;"></div>
+
+        <label>2. डिटेल्स भरें:</label>
+        <div class="form-group"><label>नाम (Name):</label><input type="text" id="name" value="RAHUL GUPTA"></div>
+        <div class="form-group"><label>लिंग (Gender):</label><input type="text" id="gender" value="MALE"></div>
+        <div class="form-group"><label>जन्म तिथि (DOB):</label><input type="text" id="dob" value="24/06/2021"></div>
+        <div class="form-group"><label>जन्म स्थान (Place of Birth):</label><input type="text" id="place" value="SWAMY DAYANAND HOSPITAL"></div>
+        
+        <button onclick="fillPDF()">नया PDF डाउनलोड करें</button>
+        <div class="note">यह टूल 100% सुरक्षित है और आपके ब्राउज़र के अंदर काम करता है।</div>
     </div>
 
-    <div class="footer">
-        Disclaimer: This is a system generated verification page.<br>
-        &copy; 2026 Municipal Corporation of Delhi. All rights reserved.
-    </div>
+    <script>
+        async function fillPDF() {
+            const fileInput = document.getElementById('pdfUpload');
+            if (fileInput.files.length === 0) {
+                alert('कृपया पहले अपना PDF फाइल अपलोड करें!');
+                return;
+            }
 
+            try {
+                // 1. अपलोड की गई PDF फाइल को रीड करें
+                const file = fileInput.files[0];
+                const arrayBuffer = await file.arrayBuffer();
+
+                // 2. pdf-lib का इस्तेमाल करके PDF लोड करें
+                const { PDFDocument, rgb } = PDFLib;
+                const pdfDoc = await PDFDocument.load(arrayBuffer);
+                const pages = pdfDoc.getPages();
+                const firstPage = pages[0]; // पहले पेज पर काम कर रहे हैं
+
+                // 3. फॉर्म से आपके डाले गए नाम/डिटेल निकालें
+                const name = document.getElementById('name').value;
+                const gender = document.getElementById('gender').value;
+                const dob = document.getElementById('dob').value;
+                const place = document.getElementById('place').value;
+
+                // 4. PDF पर टेक्स्ट लिखें (X और Y कोऑर्डिनेट्स सेट करें)
+                // ध्यान दें: PDF में Y=0 सबसे नीचे (Bottom) होता है। 
+                // आपको अपने PDF के हिसाब से इन x और y नंबरों को बदलना पड़ेगा ताकि टेक्स्ट सही लाइन पर छपे।
+                const fontSize = 11;
+                const textColor = rgb(0, 0, 0); // Black color
+                const fontName = 'Helvetica'; // Basic font fallback
+
+                firstPage.drawText(name, { x: 250, y: 600, size: fontSize, color: textColor });
+                firstPage.drawText(gender, { x: 250, y: 575, size: fontSize, color: textColor });
+                firstPage.drawText(dob, { x: 250, y: 550, size: fontSize, color: textColor });
+                firstPage.drawText(place, { x: 250, y: 525, size: fontSize, color: textColor });
+
+                // 5. नया PDF सेव करें और डाउनलोड करवाएं
+                const pdfBytes = await pdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'Edited_Document.pdf';
+                link.click();
+                
+            } catch (error) {
+                console.error(error);
+                alert('PDF बनाने में कोई एरर आ गया। कृपया कंसोल चेक करें।');
+            }
+        }
+    </script>
 </body>
 </html>
