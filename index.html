@@ -3,172 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Certificate | Municipal Corporation of Delhi</title>
+    <title>Birth Certificate Verification | Municipal Corporation of Delhi</title>
     <style>
+        :root {
+            --mcd-blue: #003366;
+            --mcd-red: #cc0000;
+            --success-green: #198754;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
             color: #333;
         }
         .header {
-            background-color: #0d47a1;
+            background-color: var(--mcd-blue);
             color: white;
-            padding: 20px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 15px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--mcd-red);
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-            text-transform: uppercase;
+            margin: 5px 0;
+            font-size: 22px;
+            font-weight: 700;
             letter-spacing: 1px;
         }
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
+        .header h2 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 400;
+        }
+        .main-container {
+            max-width: 750px;
+            margin: 30px auto;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
             overflow: hidden;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #dee2e6;
         }
-        .verification-status {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            padding: 25px;
-            text-align: center;
-            border-bottom: 1px solid #c8e6c9;
-        }
-        .verification-status h2 {
-            margin: 0;
-            font-size: 22px;
+        .status-bar {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            border-bottom: 1px solid #badbcc;
         }
-        .icon-check {
-            background-color: #4caf50;
+        .status-bar h3 {
+            margin: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .check-icon {
+            background: var(--success-green);
             color: white;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             display: inline-flex;
-            align-items: center;
             justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
+            align-items: center;
+            font-size: 14px;
         }
-        .details-section {
-            padding: 35px;
+        .details-wrapper {
+            padding: 25px 30px;
         }
-        .details-section h3 {
+        .section-title {
+            color: var(--mcd-blue);
+            border-bottom: 2px solid var(--mcd-red);
+            padding-bottom: 8px;
             margin-top: 0;
-            color: #0d47a1;
-            border-bottom: 2px solid #0d47a1;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
             font-size: 18px;
+            margin-bottom: 20px;
         }
-        table {
+        .info-table {
             width: 100%;
             border-collapse: collapse;
         }
-        th, td {
-            padding: 14px 15px;
+        .info-table th, .info-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
             text-align: left;
-            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
         }
-        th {
-            width: 35%;
-            color: #555;
+        .info-table th {
+            width: 40%;
+            color: #495057;
             font-weight: 600;
-            background-color: #fafafa;
+            background-color: #f8f9fa;
         }
-        td {
-            color: #222;
-            font-weight: 600;
+        .info-table td {
+            font-weight: 700;
+            color: #212529;
         }
-        tr:hover td, tr:hover th {
-            background-color: #f9fbfd;
+        .info-table tr:last-child th, .info-table tr:last-child td {
+            border-bottom: none;
         }
         .footer {
-            background-color: #263238;
-            color: #b0bec5;
+            background-color: #343a40;
+            color: #adb5bd;
             text-align: center;
-            padding: 20px;
-            font-size: 13px;
-            margin-top: 50px;
+            padding: 15px;
+            font-size: 12px;
+            margin-top: 40px;
         }
         @media (max-width: 600px) {
-            .container { margin: 15px; }
-            th, td { display: block; width: 100%; }
-            th { background-color: transparent; padding-bottom: 4px; border-bottom: none; color: #777; font-size: 13px; }
-            td { padding-top: 0; margin-bottom: 12px; font-size: 16px; border-bottom: 1px solid #eee; }
-            .header h1 { font-size: 18px; text-align: center; }
+            .main-container { margin: 15px; }
+            .info-table th, .info-table td { display: block; width: 100%; box-sizing: border-box; }
+            .info-table th { border-bottom: none; padding-bottom: 5px; font-size: 13px; color: #6c757d; }
+            .info-table td { padding-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; }
         }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <h1>Municipal Corporation of Delhi</h1>
+        <h1>MUNICIPAL CORPORATION OF DELHI</h1>
+        <h2>Online Certificate Verification Portal</h2>
     </div>
-    
-    <div class="container">
-        <div class="verification-status">
-            <h2><span class="icon-check">✓</span> Certificate Verified Successfully</h2>
-            <p style="margin: 12px 0 0 0; font-size: 15px; font-weight: 500;">This Document is valid and digitally verified in the MCD online database.</p>
+
+    <div class="main-container">
+        <div class="status-bar">
+            <h3><span class="check-icon">✓</span> Valid & Verified Certificate</h3>
         </div>
-        
-        <div class="details-section">
-            <h3>Registered Certificate Details</h3>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Registration No</th>
-                        <td>MCDOLIR-0121-279439</td>
-                    </tr>
-                    <tr>
-                        <th>Registration Date</th>
-                        <td>14/07/2021</td>
-                    </tr>
-                    <tr>
-                        <th>Name Of The Child</th>
-                        <td>AMAAN ANSARI</td>
-                    </tr>
-                    <tr>
-                        <th>Date of Birth</th>
-                        <td>24/06/2021</td>
-                    </tr>
-                    <tr>
-                        <th>Gender</th>
-                        <td>MALE</td>
-                    </tr>
-                    <tr>
-                        <th>Name of Father</th>
-                        <td>WAHID</td>
-                    </tr>
-                    <tr>
-                        <th>Name of Mother</th>
-                        <td>KANCHAN</td>
-                    </tr>
-                    <tr>
-                        <th>Place of Birth</th>
-                        <td style="line-height: 1.5;">SWAMY DAYANAND HOSPITAL SWAMY DAYAND HOSPPITAL, C-BLOCK, DILSHAD GARDEN, DELHI 110095</td>
-                    </tr>
-                </tbody>
+
+        <div class="details-wrapper">
+            <h3 class="section-title">Certificate Details</h3>
+            <table class="info-table">
+                <tr>
+                    <th>Registration No.</th>
+                    <td>MCDOLIR-0121-279439</td>
+                </tr>
+                <tr>
+                    <th>Registration Date</th>
+                    <td>14/07/2021</td>
+                </tr>
+                <tr>
+                    <th>Name Of The Child</th>
+                    <td>AMAAN ANSARI</td>
+                </tr>
+                <tr>
+                    <th>Date of Birth</th>
+                    <td>24/06/2021</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>MALE</td>
+                </tr>
+                <tr>
+                    <th>Father's Name</th>
+                    <td>WAHID</td>
+                </tr>
+                <tr>
+                    <th>Mother's Name</th>
+                    <td>KANCHAN</td>
+                </tr>
+                <tr>
+                    <th>Place of Birth</th>
+                    <td style="line-height: 1.4;">SWAMY DAYANAND HOSPITAL, DILSHAD GARDEN, DELHI</td>
+                </tr>
             </table>
         </div>
     </div>
 
     <div class="footer">
-        &copy; 2026 Municipal Corporation of Delhi. All rights reserved.<br>
-        <span style="display: block; margin-top: 8px;">Online Certificate Verification System</span>
+        Disclaimer: This is a system generated verification page.<br>
+        &copy; 2026 Municipal Corporation of Delhi. All rights reserved.
     </div>
+
 </body>
 </html>
